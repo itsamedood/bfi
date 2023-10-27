@@ -24,6 +24,8 @@
       ],
       "args": [
         "--no_chr_limit",
+        "--dump=bin/hello.dump",
+        "--out=bin/hello.output",
         "test/hello.bf"
       ],
       "console": "integratedTerminal",

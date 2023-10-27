@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "name": "Run Shell",
+      "type": "python",
+      "request": "launch",
+      "program": "src/main.py",
+      "pythonArgs": [
+        "-B",
+      ],
+      "args": [
+        "--out=bin/hello.output"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Run File",
+      "type": "python",
+      "request": "launch",
+      "program": "src/main.py",
+      "pythonArgs": [
+        "-B",
+      ],
+      "args": [
+        "--no_chr_limit",
+        "test/hello.bf"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

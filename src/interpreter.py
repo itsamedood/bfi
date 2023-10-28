@@ -63,7 +63,7 @@ class Interpreter:
     return (self.data, self.pointer)
 
   def dump(self, _path: str) -> None:
-      with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data))
+      with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].
       print("Successfully dumped data to '%s'." %_path)
 
   def output(self, _path: str) -> None:

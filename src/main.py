@@ -1,6 +1,5 @@
 from flags import *
 from interpreter import Interpreter
-from io import StringIO
 from os.path import exists
 from sys import argv
 
@@ -19,8 +18,6 @@ def shell(_interpreter: Interpreter) -> None:
       lines.append(code)
 
   except KeyboardInterrupt: print('\n')
-
-
 
   print("Exited.")
 

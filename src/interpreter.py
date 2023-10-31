@@ -1,5 +1,6 @@
 from flags import Flags
 from io import StringIO
+from math import sqrt
 from os.path import exists
 
 
@@ -10,9 +11,15 @@ class Interpreter:
     self.op = StringIO()
     self.flags = _flags
 
+  def _clear_strios(self, *strios: StringIO) -> None:
+    for strio in strios:
+      strio.seek(0)
+      strio.truncate(0)
+
   def parse_code(self, _code: str) -> tuple[list[int], int]:
     i, loopstart = 0, 0
 
+    # Use a while loop since it allows us to jump back x characters for looping.
     while i < len(_code):
       c = _code[i]
 
@@ -61,6 +68,35 @@ class Interpreter:
       i += 1
 
     return (self.data, self.pointer)
+
+  def ttc(self, _text: str) -> str:
+    """ Text To Code. """
+
+    code = StringIO()
+    iterc, incrs, extra = StringIO(), StringIO(), StringIO()
+
+    for i, c in enumerate(_text):
+      v = ord(c)
+      vroot = int(sqrt(v))
+
+      if v < 0 or (not self.flags.no_chr_limit and v > 127):
+        print(f"{v} out of range ('{c}').")
+        exit(1)
+
+      itercount = vroot
+      incrcount = int(v / vroot)
+      vv = itercount * incrcount
+
+      if not v == vv:
+        if v < vv: extra.write(''.join(['-' for _ in range(vv - v)]))
+        elif v > vv: extra.write(''.join(['+' for _ in range(v - vv)]))
+
+      iterc.write(''.join(['+' for _ in range(itercount)]))
+      incrs.write(''.join(['+' for _ in range(incrcount)]))
+      code.write(f"{'>' if '.' not in code.getvalue() else ">>"}{iterc.getvalue()}[<{incrs.getvalue()}>-]<{extra.getvalue()}.")
+
+      self._clear_strios(iterc, incrs, extra)
+    return code.getvalue()
 
   def dump(self, _path: str) -> None:
       with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].

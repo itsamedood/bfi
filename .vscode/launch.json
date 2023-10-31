@@ -30,6 +30,21 @@
       ],
       "console": "integratedTerminal",
       "justMyCode": true
+    },
+    {
+      "name": "Run File (TTC)",
+      "type": "python",
+      "request": "launch",
+      "program": "src/main.py",
+      "pythonArgs": [
+        "-B",
+      ],
+      "args": [
+        "--ttc",
+        "test/hello.txt"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
     }
   ]
 }

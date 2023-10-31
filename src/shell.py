@@ -27,7 +27,7 @@ class Shell:
           if self.print_d_and_p: print(f"pointer = {self.pointer}\ndata = {self.data}")
           else: self.print_d_and_p = True
 
-          self.lines.append(code if '+' in code or '-' in code or '<' in code or '>' in code or '[' in code or ']' in code else '')
+          self.lines.append(code if '+' in code or '-' in code or '<' in code or '>' in code or '.' in code or ',' in code or '[' in code or ']' in code else '')
           self.lines = [l for l in self.lines if len(l) > 0]
 
     except KeyboardInterrupt: print('\n')
@@ -38,7 +38,10 @@ class Shell:
     match _code:
       case "clear": system("clear")
       case "dump": print(f"pointer = {self.pointer}\ndata = {self.data}")
-      case "list": print('\n'.join(self.lines))
+
+      case "list":
+        for i, l in enumerate(self.lines): print(f"{i+1}) {l}")
+
       case "help": print("""
 clear | Clear the screen.
 dump  | Show the pointer and data.

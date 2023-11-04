@@ -1,4 +1,5 @@
 from flags import *
+from colorama import init as init_colorama
 from interpreter import Interpreter
 from os.path import exists
 from shell import Shell
@@ -16,6 +17,8 @@ def read(_file: str, _interpreter: Interpreter) -> None:
 
 
 if __name__ == "__main__":
+  init_colorama()  # Initialize colorama.
+
   flags = Flags([f[2:] for f in argv if f[:2] == "--"])
   interpreter = Interpreter(flags)
 

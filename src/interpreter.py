@@ -1,12 +1,14 @@
+from colorama import Fore
 from flags import Flags
 from io import StringIO
 from math import sqrt
 from os.path import exists
+from sys import exit
 
 
 class Interpreter:
   def __init__(self, _flags: Flags) -> None:
-    self.data = [0]
+    self.data = [0] if _flags.max_size is None else [0 for _ in range(_flags.max_size)]
     self.pointer = 0
     self.op = StringIO()
     self.flags = _flags
@@ -26,7 +28,13 @@ class Interpreter:
       match c:
         case '>':
           self.pointer += 1
-          if len(self.data) < self.pointer + 1: self.data.append(0)
+
+          if len(self.data) < self.pointer + 1:
+            if self.flags.max_size is not None and len(self.data) == self.flags.max_size:
+              print(f"╭─ Cannot exceed max size of {self.flags.max_size}.\n╰─> {''.join([f"{Fore.RED}{l}{Fore.RESET}" if j == i else l for j, l in enumerate(_code)])}")
+              self.pointer -= 1
+
+            else: self.data.append(0)
 
         case '<':
           if self.pointer > 0: self.pointer -= 1
@@ -38,7 +46,22 @@ class Interpreter:
         case '.':
           value = self.data[self.pointer]
 
-          if value < 0 or (not self.flags.no_chr_limit and value > 127): print("%s out of range." %value)
+          #                          >>+++++++++++++[<++++++++++>-]<.
+          # >++++++++[<+++++++++>-]<.                                >>++++++++[<+++++++++>-]<.
+          # The statement above produces 130 (👆), which is > 127 and should be highlighted red and shown to have produced the error.
+          # Of course, this is all negated by using the flag 'no_chr_limit' as you can see in the if statement below.
+
+          if value < 0 or (not self.flags.no_chr_limit and value > 127):
+            distance = 0
+
+            # Get distance between current `.` and the `.` before it.
+            for j in range(i-1, -1, -1):
+              if _code[j] == '.': break
+              else:  distance += 1
+
+            print(f"╭─ {value} out of range.\n╰─> {_code[:i-distance]}{Fore.RED}{_code[i-distance:i]}.{Fore.RESET}{_code[i+1:]}")
+            if not self.flags.no_exit: exit(1)
+
           else:
             char = chr(self.data[self.pointer])
 
@@ -75,7 +98,7 @@ class Interpreter:
     code = StringIO()
     iterc, incrs, extra = StringIO(), StringIO(), StringIO()
 
-    for i, c in enumerate(_text):
+    for c in _text:
       v = ord(c)
       vroot = int(sqrt(v))
 

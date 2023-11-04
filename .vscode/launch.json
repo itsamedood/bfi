@@ -9,7 +9,9 @@
         "-B",
       ],
       "args": [
-        "--out=bin/hello.output"
+        "--out=test/hello_sh.output",
+        "--dump=test/hello_sh.dump",
+        "--max_size=2"
       ],
       "console": "integratedTerminal",
       "justMyCode": true
@@ -24,8 +26,8 @@
       ],
       "args": [
         "--no_chr_limit",
-        "--dump=bin/hello.dump",
-        "--out=bin/hello.output",
+        "--dump=test/hello.dump",
+        "--out=test/hello.output",
         "test/hello.bf"
       ],
       "console": "integratedTerminal",

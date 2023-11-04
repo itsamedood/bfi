@@ -4,11 +4,11 @@ from os import system
 
 class Shell:
   lines: list[str] = []
-  data: list[int] = []
-  pointer = 0
   print_d_and_p = True
 
   def __init__(self, _interpreter: Interpreter) -> None:
+    self.interpreter = _interpreter
+
     print("Brainfuck Interpreter (bfi) Shell", "\nType `help` for a list of commands, or `exit` to exit the shell.")
 
     try:
@@ -48,7 +48,14 @@ dump  | Show the pointer and data.
 exit  | Exit shell.
 help  | Display this menu.
 list  | List all lines of code.
+reset | Wipe all lines, the data array, and set the pointer back to `0`.
 """)
+
+      case "reset":
+        self.lines = []
+        self.interpreter.pointer = 0
+        self.interpreter.data = [0]
+
       case _: return False
 
     return True

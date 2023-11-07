@@ -1,4 +1,5 @@
 <center>
+  <img align="right" src="assets/bfi-logo.png" width="200" />
   <h1>BFI</h1>
   <h3>Brainfuck Interpreter</h3>
 </center>
@@ -13,7 +14,7 @@ Not sure why you wanna use it but:
 
 > ## Build instructions!
 > 1) Install Python3.12.
-> 2) Install [`PyInstaller`](https://pypi.org/project/pyinstaller/)
+> 2) Install [`PyInstaller`](https://pypi.org/project/pyinstaller/) and [`Colorama`](https://pypi.org/project/colorama/)
 > 3) Run:
 >> `$ make build`
 > 4) Check `./bin` for your executable.

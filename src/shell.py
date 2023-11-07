@@ -27,22 +27,24 @@ class Shell:
           if self.print_d_and_p: print(f"pointer = {self.pointer}\ndata = {self.data}")
           else: self.print_d_and_p = True
 
-          self.lines.append(code if '+' in code or '-' in code or '<' in code or '>' in code or '.' in code or ',' in code or '[' in code or ']' in code else '')
-          self.lines = [l for l in self.lines if len(l) > 0]
+          # Allows comments to count as lines.
+          if not self.iscommand(code, True) and len(code) > 0: self.lines.append(code)
+          # self.lines = [l for l in self.lines if len(l) > 0]
 
     except KeyboardInterrupt: print('\n')
-
     print("Exited.")
 
-  def iscommand(self, _code: str) -> bool:
+  def iscommand(self, _code: str, _onlycheck = False) -> bool:
     match _code:
-      case "clear": system("clear")
-      case "dump": print(f"pointer = {self.pointer}\ndata = {self.data}")
-
+      case "clear":
+        if not _onlycheck: system("clear")
+      case "dump":
+        if not _onlycheck: print(f"pointer = {self.pointer}\ndata = {self.data}")
       case "list":
-        for i, l in enumerate(self.lines): print(f"{i+1}) {l}")
+        if not _onlycheck: [print(f"{i+1}) {l}") for i, l in enumerate(self.lines)]
 
-      case "help": print("""
+      case "help":
+        if not _onlycheck: print("""
 clear | Clear the screen.
 dump  | Show the pointer and data.
 exit  | Exit shell.
@@ -52,9 +54,10 @@ reset | Wipe all lines, the data array, and set the pointer back to `0`.
 """)
 
       case "reset":
-        self.lines = []
-        self.interpreter.pointer = 0
-        self.interpreter.data = [0]
+        if not _onlycheck:
+          self.lines = []
+          self.interpreter.pointer = 0
+          self.interpreter.data = [0]
 
       case _: return False
 

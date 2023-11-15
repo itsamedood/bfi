@@ -125,6 +125,27 @@ class Interpreter:
       with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].
       print("Successfully dumped data to '%s'." %_path)
 
+  def format(self, _path: str) -> None:
+    ml = self.flags.max_len
+    if ml is None: ml = 50
+
+    if not exists(_path):
+      print("Cannot format `` because it doesn't exist.")
+      exit(1)
+
+    chars = "><+-.,[]"
+    code = StringIO()
+
+    with open(_path, 'r') as bffile:
+      for c in bffile.read():
+        if ml > 0 and len(code.getvalue()) % ml == 0: code.write('\n')
+        if c in chars: code.write(c)
+
+    with open(_path, 'w') as bffile: bffile.write(code.getvalue().strip())
+
+    print("Formatted %s successfully." %_path)
+    exit(0)
+
   def output(self, _path: str) -> None:
     with open(_path, 'w' if exists(_path) else 'x') as opfile: opfile.write(self.op.getvalue())
     print("Successfully wrote output to '%s'." %_path)

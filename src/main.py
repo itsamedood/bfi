@@ -22,10 +22,12 @@ if __name__ == "__main__":
   flags = Flags([f[2:] for f in argv if f[:2] == "--"])
   interpreter = Interpreter(flags)
 
+  if flags.format is not None: interpreter.format(flags.format)  # Placed here to not trigger the shell.
+
   if len(argv) <= 1 or len([a for a in argv[1:] if not a[:2] == "--"]) < 1: Shell(interpreter)
   else:
     file = argv[-1]
     read(file, interpreter)
 
-  if flags.out is not None: interpreter.output(flags.out)
   if flags.dump is not None: interpreter.dump(flags.dump)
+  if flags.out is not None: interpreter.output(flags.out)

@@ -6,7 +6,7 @@ from shell import Shell
 from sys import argv
 
 
-def read(_file: str, _interpreter: Interpreter) -> None:
+def read_bf_file(_file: str, _interpreter: Interpreter) -> None:
   if not exists(_file):
     print("Could not find %s." %_file)
     exit(1)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
   if len(argv) <= 1 or len([a for a in argv[1:] if not a[:2] == "--"]) < 1: Shell(interpreter)
   else:
     file = argv[-1]
-    read(file, interpreter)
+    read_bf_file(file, interpreter)
 
   if flags.dump is not None: interpreter.dump(flags.dump)
   if flags.out is not None: interpreter.output(flags.out)

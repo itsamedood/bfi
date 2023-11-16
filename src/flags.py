@@ -2,12 +2,15 @@ from sys import exit
 
 
 class Flags:
+  """ Represents every flag recognized by the interpreter. """
+
   debug = False
   no_chr_limit = False
   no_exit = False
   no_stdout = False
   ttc = False
   help = False
+  verbose = False
   dump: str | None = None
   find: str | int | None
   format: str | None = None
@@ -24,6 +27,7 @@ Flags:
   --no_stdout           | Disable printing the value when using `.`.
   --ttc                 | Text To Code, converts regular text to Brainfuck code.
   --help                | Shows this help menu.
+  --verbose             | Show some extra info.
   --dump=<path>         | Dump the data (memory, if you will) into the specified file.
   --find=<char|int>     | Find a specific character by it's value or number and highlight it.
   --format=<bfFile>     | Formats a `.bf` file, which involves removing all characters that are not part of Brainfuck.
@@ -107,6 +111,8 @@ Flags:
           case "help":
             print(self.helpmsg)
             exit(0)
+
+          case "verbose": self.verbose = True
 
           case f:
             print("Unknown flag: %s" %f)

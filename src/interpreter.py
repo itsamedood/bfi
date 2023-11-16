@@ -6,6 +6,8 @@ from sys import exit
 
 
 class Interpreter:
+  """ Interprets Brainfuck code and can do a few other things. """
+
   def __init__(self, _flags: Flags) -> None:
     self.data = [0] if _flags.max_size is None else [0 for _ in range(_flags.max_size)]
     self.pointer = 0
@@ -18,6 +20,8 @@ class Interpreter:
       strio.truncate(0)
 
   def parse_code(self, _code: str) -> tuple[list[int], int]:
+    """ Parses given code, ignoring any invalid characters. """
+
     i, loopstart = 0, 0
 
     # Use a while loop since it allows us to jump back x characters for looping.
@@ -50,6 +54,7 @@ class Interpreter:
           # The statement above produces 130 (👆), which is > 127 and should be highlighted red and shown to have produced the error.
           # Of course, this is all negated by using the flag 'no_chr_limit' as you can see in the if statement below.
 
+          # Highlight code that produced bad value and highlight it red.
           if value < 0 or (not self.flags.no_chr_limit and value > 127):
             distance = 0
 
@@ -67,7 +72,7 @@ class Interpreter:
             self.op.write(char)
             if not self.flags.no_stdout: print(char)
 
-        case ',':
+        case ',':  # Honestly who even uses this.
           uinput: int | None = None
 
           while uinput is None:
@@ -84,15 +89,14 @@ class Interpreter:
           else: loopstart = i
 
         case ']':
-          if self.data[self.pointer] == 0: loopstart = 0
-          else: i = loopstart
+          if not self.data[self.pointer] == 0: i = loopstart
 
       i += 1
 
     return (self.data, self.pointer)
 
   def ttc(self, _text: str) -> str:
-    """ Text To Code. """
+    """ Text To Code, converts regular text to Brainfuck code. """
 
     code = StringIO()
     iterc, incrs, extra = StringIO(), StringIO(), StringIO()
@@ -105,15 +109,18 @@ class Interpreter:
         print(f"{v} out of range ('{c}').")
         exit(1)
 
+      # Calculate iteration count.
       itercount = i + (10 - (v % 10)) if v % 10 > 5 else i + (5 - (v % 5)) if v % 5 >= 5 else i
       vv = itercount * i
 
       if not v == vv:
+        # Only global so it can be printed out for debugging, will remove when this garbage works properly.
         global diff; diff = abs((v - vv) if v > vv else (vv - v))
         extra.write(''.join(['+' if v > vv else '-' for _ in range(diff)]))
 
-      print(itercount, v, vv, diff)
+      if self.flags.verbose: print(itercount, i, v, vv, diff)
 
+      # Write the Brainfuck code.
       iterc.write(''.join(['+' for _ in range(itercount)]))
       incrs.write(''.join(['+' for _ in range(i)]))
       code.write(f"{'>' if '.' not in code.getvalue() else ">>"}{iterc.getvalue()}[<{incrs.getvalue()}>-]<{extra.getvalue()}.")
@@ -122,19 +129,25 @@ class Interpreter:
     return code.getvalue()
 
   def dump(self, _path: str) -> None:
+      """ Dump the data (memory, if you will) into the specified file. """
+
       with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].
       print("Successfully dumped data to '%s'." %_path)
 
   def find(self, target: str | int) -> None:
+    """ Find a specific character by it's value or number and highlight it. """
+
     if type(target) == int: ...
     else: ...
 
   def format(self, _path: str) -> None:
+    """ Formats a `.bf` file, which involves removing all characters that are not part of Brainfuck. """
+
     ml = self.flags.max_len
     if ml is None: ml = 50
 
     if not exists(_path):
-      print("Cannot format `` because it doesn't exist.")
+      print("Cannot format '%s' because it doesn't exist." %_path)
       exit(1)
 
     chars = "><+-.,[]"
@@ -151,5 +164,7 @@ class Interpreter:
     exit(0)
 
   def output(self, _path: str) -> None:
+    """ Dump the output into a file. The output is comprised of every time you print a value using `.`. """
+
     with open(_path, 'w' if exists(_path) else 'x') as opfile: opfile.write(self.op.getvalue())
     print("Successfully wrote output to '%s'." %_path)

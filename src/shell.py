@@ -3,6 +3,8 @@ from os import system
 
 
 class Shell:
+  """ Manages the interpreter in shell mode. """
+
   lines: list[str] = []
   print_d_and_p = True
 

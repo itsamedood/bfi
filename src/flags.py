@@ -2,12 +2,14 @@ from sys import exit
 
 
 class Flags:
+  debug = False
   no_chr_limit = False
   no_exit = False
   no_stdout = False
   ttc = False
   help = False
   dump: str | None = None
+  find: str | int | None
   format: str | None = None
   max_len: int | None = None
   max_size: int | None = None
@@ -16,12 +18,14 @@ class Flags:
   helpmsg = """Brainfuck Interpreter (bfi)
 Usage: bfi --[flags] [file]
 Flags:
+  --debug               | Tells you what characters are being emitted by the Brainfuck code.
   --no_chr_limit        | Removes limit of 127 when using `chr` (end of ASCII table).
   --no_exit             | Forces the interpreter to continue after an error (like a value out of range).
   --no_stdout           | Disable printing the value when using `.`.
   --ttc                 | Text To Code, converts regular text to Brainfuck code.
   --help                | Shows this help menu.
   --dump=<path>         | Dump the data (memory, if you will) into the specified file.
+  --find=<char|int>     | Find a specific character by it's value or number and highlight it.
   --format=<bfFile>     | Formats a `.bf` file, which involves removing all characters that are not part of Brainfuck.
   --max_len=<len>       | *WORKS WITH --format* Determines length of a line till a `\\n` is appended. `0` means no `\\n`s. Default is `50`.
   --max_size=<size>     | Limits the size of the array to specified size.
@@ -42,6 +46,13 @@ Flags:
               exit(1)
 
             self.dump = value
+
+          case "find":
+            if len(value) < 1:
+              print("Expected value for flag 'find'.")
+              exit(1)
+
+            self.find = int(value) if value.isnumeric() else value
 
           case "format":
             if len(value) < 1:
@@ -88,6 +99,7 @@ Flags:
       else:
         # Flags that don't need a value.
         match f:
+          case "debug": self.debug = True
           case "no_chr_limit": self.no_chr_limit = True
           case "no_exit": self.no_exit = True
           case "no_stdout": self.no_stdout = True

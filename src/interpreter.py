@@ -1,7 +1,6 @@
 from colorama import Fore
 from flags import Flags
 from io import StringIO
-from math import sqrt
 from os.path import exists
 from sys import exit
 
@@ -100,22 +99,23 @@ class Interpreter:
 
     for c in _text:
       v = ord(c)
-      vroot = int(sqrt(v))
+      i = v // 10
 
       if v < 0 or (not self.flags.no_chr_limit and v > 127):
         print(f"{v} out of range ('{c}').")
         exit(1)
 
-      itercount = vroot
-      incrcount = int(v / vroot)
-      vv = itercount * incrcount
+      itercount = i + (10 - (v % 10)) if v % 10 > 5 else i + (5 - (v % 5)) if v % 5 >= 5 else i
+      vv = itercount * i
 
       if not v == vv:
-        if v < vv: extra.write(''.join(['-' for _ in range(vv - v)]))
-        elif v > vv: extra.write(''.join(['+' for _ in range(v - vv)]))
+        global diff; diff = abs((v - vv) if v > vv else (vv - v))
+        extra.write(''.join(['+' if v > vv else '-' for _ in range(diff)]))
+
+      print(itercount, v, vv, diff)
 
       iterc.write(''.join(['+' for _ in range(itercount)]))
-      incrs.write(''.join(['+' for _ in range(incrcount)]))
+      incrs.write(''.join(['+' for _ in range(i)]))
       code.write(f"{'>' if '.' not in code.getvalue() else ">>"}{iterc.getvalue()}[<{incrs.getvalue()}>-]<{extra.getvalue()}.")
 
       self._clear_strios(iterc, incrs, extra)
@@ -124,6 +124,10 @@ class Interpreter:
   def dump(self, _path: str) -> None:
       with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].
       print("Successfully dumped data to '%s'." %_path)
+
+  def find(self, target: str | int) -> None:
+    if type(target) == int: ...
+    else: ...
 
   def format(self, _path: str) -> None:
     ml = self.flags.max_len

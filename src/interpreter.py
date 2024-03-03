@@ -1,6 +1,7 @@
 from colorama import Fore
 from flags import Flags
 from io import StringIO
+from math import sqrt
 from os.path import exists
 from sys import exit
 
@@ -99,33 +100,49 @@ class Interpreter:
     """ Text To Code, converts regular text to Brainfuck code. """
 
     code = StringIO()
-    iterc, incrs, extra = StringIO(), StringIO(), StringIO()
+    # iterc, incrs, extra = StringIO(), StringIO(), StringIO()
 
     for c in _text:
       v = ord(c)
-      i = v // 10
 
       if v < 0 or (not self.flags.no_chr_limit and v > 127):
         print(f"{v} out of range ('{c}').")
         exit(1)
 
-      # Calculate iteration count.
-      itercount = i + (10 - (v % 10)) if v % 10 > 5 else i + (5 - (v % 5)) if v % 5 >= 5 else i
-      vv = itercount * i
+      prime = True
+      best: tuple[int, int, int]
+      min_diff = float("inf")
 
-      if not v == vv:
-        # Only global so it can be printed out for debugging, will remove when this garbage works properly.
-        global diff; diff = abs((v - vv) if v > vv else (vv - v))
-        extra.write(''.join(['+' if v > vv else '-' for _ in range(diff)]))
+      # First we check if it's a prime number like 101, since we don't want (1, 101).
+      if v > 2:
+        for i in range(2, int(sqrt(v)) + 1):
+          if v % i == 0:
+            prime = False
+            break
 
-      if self.flags.verbose: print(itercount, i, v, vv, diff)
+        if prime:
+          v -= 1
+          k = 1
+        else: k = 0
 
-      # Write the Brainfuck code.
-      iterc.write(''.join(['+' for _ in range(itercount)]))
-      incrs.write(''.join(['+' for _ in range(i)]))
-      code.write(f"{'>' if '.' not in code.getvalue() else ">>"}{iterc.getvalue()}[<{incrs.getvalue()}>-]<{extra.getvalue()}.")
 
-      self._clear_strios(iterc, incrs, extra)
+      # Now we do fancy(ish) math to determine best nums for multiplying and having a clean amount of `+`s.
+      for i in range(1, v+1):
+        if v % i == 0:
+          j = v // i
+          diff = abs(i - j)
+
+          if diff < min_diff:
+            min_diff = diff
+            best = (i, j, k)
+
+      print(f"BEST NUMS FOR {v}: ({best[0]}, {best[1]})")
+
+      iterc, incrs, extra = best
+
+      code.write(f"{'>' if '.' not in code.getvalue() else ">>"}{''.join(['+' for _ in range(iterc)])}[<{''.join(['+' for _ in range(incrs)])}>-]<{''.join(['+' if extra > 0 else '-' for _ in range(extra)])}.")
+
+
     return code.getvalue()
 
   def dump(self, _path: str) -> None:

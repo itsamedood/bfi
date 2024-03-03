@@ -50,8 +50,7 @@ class Interpreter:
         case '.':
           value = self.data[self.pointer]
 
-          #                          >>+++++++++++++[<++++++++++>-]<.
-          # >++++++++[<+++++++++>-]<.                                >>++++++++[<+++++++++>-]<.
+          # >++++++++[<+++++++++>-]<. >>+++++++++++++[<++++++++++>-]<. >>++++++++[<+++++++++>-]<.
           # The statement above produces 130 (👆), which is > 127 and should be highlighted red and shown to have produced the error.
           # Of course, this is all negated by using the flag 'no_chr_limit' as you can see in the if statement below.
 
@@ -71,7 +70,7 @@ class Interpreter:
             char = chr(self.data[self.pointer])
 
             self.op.write(char)
-            if not self.flags.no_stdout: print(char)
+            if not self.flags.no_stdout: print(char, end='')
 
         case ',':  # Honestly who even uses this.
           uinput: int | None = None
@@ -94,6 +93,7 @@ class Interpreter:
 
       i += 1
 
+    print('\n', end='')
     return (self.data, self.pointer)
 
   def ttc(self, _text: str) -> str:
@@ -148,7 +148,7 @@ class Interpreter:
   def dump(self, _path: str) -> None:
       """ Dump the data (memory, if you will) into the specified file. """
 
-      with open(_path, 'w' if exists(_path) else  'x') as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].
+      with open(_path, 'w' if exists(_path) else  'x', encoding="utf-8") as dmpfile: dmpfile.write(str(self.data)[1:-1])  # [1:-1] removes [ and ].
       print("Successfully dumped data to '%s'." %_path)
 
   def find(self, target: str | int) -> None:
@@ -175,7 +175,7 @@ class Interpreter:
         if ml > 0 and len(code.getvalue()) % ml == 0: code.write('\n')
         if c in chars: code.write(c)
 
-    with open(_path, 'w') as bffile: bffile.write(code.getvalue().strip())
+    with open(_path, 'w', encoding="utf-8") as bffile: bffile.write(code.getvalue().strip())
 
     print("Formatted %s successfully." %_path)
     exit(0)
@@ -183,5 +183,5 @@ class Interpreter:
   def output(self, _path: str) -> None:
     """ Dump the output into a file. The output is comprised of every time you print a value using `.`. """
 
-    with open(_path, 'w' if exists(_path) else 'x') as opfile: opfile.write(self.op.getvalue())
+    with open(_path, 'w' if exists(_path) else 'x', encoding="utf-8") as opfile: opfile.write(self.op.getvalue())
     print("Successfully wrote output to '%s'." %_path)

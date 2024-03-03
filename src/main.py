@@ -11,7 +11,7 @@ def read_bf_file(_file: str, _interpreter: Interpreter) -> None:
     print("Could not find %s." %_file)
     exit(1)
 
-  with open(_file, 'r') as src:
+  with open(_file, 'r', encoding="utf-8") as src:
     if _interpreter.flags.ttc: print(_interpreter.ttc(src.read()))
     else: _interpreter.parse_code(src.read())
 

@@ -1,7 +1,0 @@
-[shell]
-python3 -B src/main.py --out=bin/hello.output
-
-[compile]
-&echo Compiling...
-pyinstaller --onefile --distpath ./bin --name bfi ./src/main.py
-&echo Done!

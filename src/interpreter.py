@@ -136,12 +136,10 @@ class Interpreter:
             min_diff = diff
             best = (i, j, k)
 
-      print(f"BEST NUMS FOR {v}: ({best[0]}, {best[1]})")
+      # print(f"BEST NUMS FOR {v}: ({best[0]}, {best[1]})")
 
       iterc, incrs, extra = best
-
       code.write(f"{'>' if '.' not in code.getvalue() else ">>"}{''.join(['+' for _ in range(iterc)])}[<{''.join(['+' for _ in range(incrs)])}>-]<{''.join(['+' if extra > 0 else '-' for _ in range(extra)])}.")
-
 
     return code.getvalue()
 

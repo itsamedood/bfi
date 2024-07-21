@@ -8,6 +8,7 @@ class Flags:
   no_chr_limit = False
   no_exit = False
   no_stdout = False
+  no_strict_input = False
   ttc = False
   help = False
   verbose = False
@@ -25,6 +26,7 @@ Flags:
   --no_chr_limit        | Removes limit of 127 when using `chr` (end of ASCII table).
   --no_exit             | Forces the interpreter to continue after an error (like a value out of range).
   --no_stdout           | Disable printing the value when using `.`.
+  --no_strict_input     | Allows more than numbers acceptable with `,` (anything NaN will be converted using `ord`).
   --ttc                 | Text To Code, converts regular text to Brainfuck code.
   --help                | Shows this help menu.
   --verbose             | Show some extra info.
@@ -107,6 +109,7 @@ Flags:
           case "no_chr_limit": self.no_chr_limit = True
           case "no_exit": self.no_exit = True
           case "no_stdout": self.no_stdout = True
+          case "no_strict_input": self.no_strict_input = True
           case "ttc": self.ttc = True
           case "help":
             print(self.helpmsg)

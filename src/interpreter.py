@@ -3,6 +3,7 @@ from flags import Flags
 from io import StringIO
 from math import sqrt
 from os.path import exists
+from re import match
 from sys import exit
 
 
@@ -50,9 +51,11 @@ class Interpreter:
         case '.':
           value = self.data[self.pointer]
 
-          # >++++++++[<+++++++++>-]<. >>+++++++++++++[<++++++++++>-]<. >>++++++++[<+++++++++>-]<.
-          # The statement above produces 130 (👆), which is > 127 and should be highlighted red and shown to have produced the error.
-          # Of course, this is all negated by using the flag 'no_chr_limit' as you can see in the if statement below.
+          # >++++++++[<+++++++++>-]<.>>+++++++++++++[<++++++++++>-]<.>>++++++++[<+++++++++>-]<.
+          #                          👆                             👆
+          # The statement pointed at above produces 130, which is > 127,
+          # and should be highlighted red and shown to have produced the error.
+          # Can be negated by using the flag 'no_chr_limit' as seen in the if statement below.
 
           # Highlight code that produced bad value and highlight it red.
           if value < 0 or (not self.flags.no_chr_limit and value > 127):
@@ -63,7 +66,7 @@ class Interpreter:
               if _code[j] == '.': break
               else:  distance += 1
 
-            print(f"╭─ {value} out of range.\n╰─> {_code[:i-distance]}{Fore.RED}{_code[i-distance:i]}.{Fore.RESET}{_code[i+1:]}")
+            print(f"\n╭─ {value} out of range.\n╰─> {_code[:i-distance]}{Fore.RED}{_code[i-distance:i]}.{Fore.RESET}{_code[i+1:]}")
             if not self.flags.no_exit: exit(1)
 
           else:
@@ -73,11 +76,15 @@ class Interpreter:
             if not self.flags.no_stdout: print(char, end='')
 
         case ',':  # Honestly who even uses this.
-          uinput: int | None = None
+          uinput: str | int | None = None
 
           while uinput is None:
-            try: uinput = int(input("Input: "))
-            except: uinput = None
+            uinput = input("Input: ")
+
+            # Condensing like a dozen lines of code to 3 is the BEST feeling.
+            if match(r"^[0-9]*", uinput): uinput = int(uinput)
+            elif self.flags.no_strict_input and match(r"^[^\d]$", uinput): uinput = ord(uinput)
+            else: uinput = None
 
           self.data[self.pointer] = uinput
 
@@ -127,6 +134,7 @@ class Interpreter:
 
 
       # Now we do fancy(ish) math to determine best nums for multiplying and having a clean amount of `+`s.
+      # It works well most of the time 🤷‍♂️.
       for i in range(1, v+1):
         if v % i == 0:
           j = v // i

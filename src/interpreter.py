@@ -25,6 +25,7 @@ class Interpreter:
     """ Parses given code, ignoring any invalid characters. """
 
     i, loopstart = 0, 0
+    errord = False
 
     # Use a while loop since it allows us to jump back x characters for looping.
     while i < len(_code):
@@ -36,7 +37,11 @@ class Interpreter:
 
           if len(self.data) < self.pointer + 1:
             if self.flags.max_size is not None and len(self.data) == self.flags.max_size:
-              print(f"╭─ Cannot exceed max size of {self.flags.max_size}.\n╰─> {''.join([f"{Fore.RED}{l}{Fore.RESET}" if j == i else l for j, l in enumerate(_code)])}")
+              if not errord:
+                print(f"╭─ Cannot exceed max size of {self.flags.max_size}.\n╰─> {''.join([f"{Fore.RED}{l}{Fore.RESET}" if j == i else l for j, l in enumerate(_code)])}")
+                errord = True
+
+              if not self.flags.no_exit: exit(1)
               self.pointer -= 1
 
             else: self.data.append(0)

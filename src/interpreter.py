@@ -1,5 +1,5 @@
 from colorama import Fore
-from flags import Flags
+from flags import CharAction, Flags
 from io import StringIO
 from math import sqrt
 from os.path import exists
@@ -15,6 +15,9 @@ class Interpreter:
     self.pointer = 0
     self.op = StringIO()
     self.flags = _flags
+
+    self.forward, self.backward, self.increment, self.decrement, self.print, self.input, self.loop_start, self.loop_end = [char for char in _flags.bfcharset.values()]
+    # print([v for v in _flags.bfcharset.values()])
 
   def _clear_strios(self, *strios: StringIO) -> None:
     for strio in strios:
@@ -32,7 +35,7 @@ class Interpreter:
       c = _code[i]
 
       match c:
-        case '>':
+        case self.forward:
           self.pointer += 1
 
           if len(self.data) < self.pointer + 1:
@@ -46,14 +49,14 @@ class Interpreter:
 
             else: self.data.append(0)
 
-        case '<':
+        case self.backward:
           if self.pointer > 0: self.pointer -= 1
 
-        case '+': self.data[self.pointer] += 1
+        case self.increment: self.data[self.pointer] += 1
 
-        case '-': self.data[self.pointer] -= 1
+        case self.decrement: self.data[self.pointer] -= 1
 
-        case '.':
+        case self.print:
           value = self.data[self.pointer]
 
           # >++++++++[<+++++++++>-]<.>>+++++++++++++[<++++++++++>-]<.>>++++++++[<+++++++++>-]<.
@@ -80,7 +83,7 @@ class Interpreter:
             self.op.write(char)
             if not self.flags.no_stdout: print(char, end='')
 
-        case ',':  # Honestly who even uses this.
+        case self.input:  # Honestly who even uses this.
           uinput: str | int | None = None
 
           while uinput is None:
@@ -93,14 +96,14 @@ class Interpreter:
 
           self.data[self.pointer] = uinput
 
-        case '[':
-          if ']' not in _code:
+        case self.loop_start:
+          if self.loop_end not in _code:
             print("Loop never closed.")
             break
 
           else: loopstart = i
 
-        case ']':
+        case self.loop_end:
           if not self.data[self.pointer] == 0: i = loopstart
 
       i += 1

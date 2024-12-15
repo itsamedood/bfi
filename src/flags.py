@@ -1,4 +1,16 @@
+from enum import Enum
 from sys import exit
+
+
+class CharAction(Enum):
+  FORWARD     = '>'
+  BACKWARD    = '<'
+  INCREMENT   = '+'
+  DECREMENT   = '-'
+  PRINT       = '.'
+  INPUT       = ','
+  LOOP_START  = '['
+  LOOP_END    = ']'
 
 
 class Flags:
@@ -18,6 +30,16 @@ class Flags:
   max_len: int | None = None
   max_size: int | None = None
   out: str | None = None
+  bfcharset: dict[CharAction, str] = {
+    CharAction.FORWARD: '>',
+    CharAction.BACKWARD: '<',
+    CharAction.INCREMENT: '+',
+    CharAction.DECREMENT: '-',
+    CharAction.PRINT: '.',
+    CharAction.INPUT: ',',
+    CharAction.LOOP_START: '[',
+    CharAction.LOOP_END: ']'
+    }
 
   helpmsg = """Brainfuck Interpreter (bfi)
 Usage: bfi --[flags] [file]
@@ -36,6 +58,7 @@ Flags:
   --max_len=<len>       | *WORKS WITH --format* Determines length of a line till a `\\n` is appended. `0` means no `\\n`s. Default is `50`.
   --max_size=<size>     | Limits the size of the array to specified size.
   --out=<path>          | Dump the output into a file. The output is comprised of every time you print a value using `.`.
+  --charset=<chars>     | Lets you change the character set from what BrainFuck normally uses, formatted as so: ><+-.,[]
 """
 
   def __init__(self, _flags: list[str]) -> None:
@@ -97,6 +120,17 @@ Flags:
               exit(1)
 
             self.out = value
+
+          case "charset":
+            if len(value) < 1:
+              print("Expected value for flag 'charset'.")
+              exit(1)
+
+            elif not len(value) == 8:
+              print("Flag 'charset' must be 8 characters.")
+              exit(1)
+
+            for i, key in enumerate(self.bfcharset): self.bfcharset[key] = value[i]
 
           case f:
             print("Unknown flag: %s" %f)
